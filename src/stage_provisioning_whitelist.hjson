@@ -1,0 +1,4 @@
+{
+  "provisionAll": false,
+  "tableNameMatchRegex": "*"
+}

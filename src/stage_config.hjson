@@ -1,0 +1,24 @@
+{
+	"region" : "us-west-2",
+	
+	"firehoseDeliveryBucket" : "fair-dynamo-backup-stage",
+	"firehoseDeliveryPrefix" : "continuous",
+	
+	// the ARN of the IAM role that Kinesis Firehose will use to write to S3
+	"firehoseDeliveryRoleArn" : "arn:aws:iam::155537346795:role/dynamo-backup-firehose",
+	
+	"firehoseDeliverySizeMB" : 128,
+	
+	"firehoseDeliveryIntervalSeconds" : 60,
+	
+	// IAM Role ARN for which AWS Lambda uses to write to Kinesis Firehose
+	"lambdaExecRoleArn" : "arn:aws:iam::155537346795:role/dynamo-backup-lambda",
+	
+	// IAM Role used by CloudWatch Events to read from AWS CloudTrail and call AWS Lambda
+	"cloudWatchRoleArn" : "arn:aws:iam::155537346795:role/dynamo-backup-cloudwatch",
+	
+	"streamsMaxRecordsBatch" : 1000,
+	
+	// regular expression to run against incoming CreateTable events, to implement filtering of which tables are configured
+	"tableNameMatchRegex": "*"
+}

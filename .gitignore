@@ -8,3 +8,5 @@ dist/dynamodb_continuous_backup.zip
 src/lib
 
 src/*.pyc
+
+src/*.zip

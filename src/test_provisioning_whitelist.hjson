@@ -1,0 +1,6 @@
+{
+  "provisionAll": false,
+  "tableNames": [
+    "dynamo-backup-test"
+  ]
+}

@@ -11,10 +11,12 @@ sys.path.append('lib')
 import dynamo_continuous_backup
 import boto3
 import os
+import re
 import hjson
 
 REGION_KEY = 'AWS_REGION'
 dynamo_client = None
+regex_pattern = None
 
 def init():
     try:
@@ -36,7 +38,7 @@ def resolve_table_list(config_file):
         config = hjson.load(open(config_file, 'r'))
 
     table_list = []
-    if config == None or config == [] or config["provisionAll"] == True:
+    if (config == None or config == [] or config["provisionAll"] == True) and "tableNameMatchRegex" not in config:
         last_table_evaluated = str(None)
         while last_table_evaluated != None or len(table_list) == 0:
             list_table_result = dynamo_client.list_tables(ExclusiveStartTableName=last_table_evaluated)
@@ -49,6 +51,15 @@ def resolve_table_list(config_file):
             else:
                 break
                 
+    # if there's regex, then return tables following regex, this can't be specified with 
+    elif "tableNameMatchRegex" in config:
+       regex_pattern = re.compile(config["tableNameMatchRegex"])
+       list_table_result = dynamo_client.list_tables()
+
+       for table_name in list_table_result['TableNames']:
+           if regex_pattern.match(table_name):
+               table_list.append(table_name)
+
     else:
         table_list = config["tableNames"]
         
