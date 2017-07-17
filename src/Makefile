@@ -7,7 +7,6 @@ login:
 prep:
 	pip install --upgrade boto3 awscli hjson shortuuid
 
-# For future tables
 build:
 	./build.sh ${cfg}
 deploy: login
@@ -15,7 +14,7 @@ deploy: login
 release: build deploy
 
 # Provision Existing
-continuous: login
+continuous: login release
 	./provision_tables.py ${provision}
 deprovision: login
 	./deprovision_tables.py ${provision}

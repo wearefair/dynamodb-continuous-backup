@@ -1,6 +1,4 @@
 {
   "provisionAll": false,
-  "tableNames": [
-    "prod-vault-sidecar" 
-  ]
+  "tableNameMatchRegex": ".*"
 }

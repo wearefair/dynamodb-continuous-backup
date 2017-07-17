@@ -20,5 +20,5 @@
 	"streamsMaxRecordsBatch" : 1000,
 	
 	// regular expression to run against incoming CreateTable events, to implement filtering of which tables are configured
-	"tableNameMatchRegex": "*"
+	"tableNameMatchRegex": ".*"
 }

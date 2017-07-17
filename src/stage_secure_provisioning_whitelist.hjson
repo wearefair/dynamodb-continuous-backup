@@ -1,7 +1,4 @@
 {
   "provisionAll": false,
-  "tableNames": [
-    "encryption-service-keys-stage-secure",
-    "encryption-service-values-stage-secure"
-  ]
+  "tableNameMatchRegex": ".*"
 }
