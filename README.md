@@ -1,5 +1,7 @@
 # DynamoDB Continuous Backup Utility
 
+**NOTE: Fair-specific instructions are in the src/ folder**
+
 Amazon DynamoDB is a fast and flexible NoSQL database service for all applications that need consistent, single-digit millisecond latency at any scale. For data durability, Tables are automatically distributed across 3 facilities in an AWS Region of your choice, and ensure continous operation even in the case of AZ level interruption of service.
 
 DynamoDB can be [backed up using Amazon Data Pipeline](http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-importexport-ddb-part2.html), which creates full point in time copies of DynamoDB tables to AmazonS3. If you want to restore data from a point in time, you simply [reimport that data into a new table](http://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-importexport-ddb-part1.html).
