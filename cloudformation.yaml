@@ -1,0 +1,132 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  "Creates resources required for DynamoDB backups"
+
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues:
+      - sandbox
+      - stage
+      - prod
+  EnvironmentType:
+    Type: String
+    AllowedValues:
+      - general
+      - secure
+
+Resources:
+  S3Bucket:
+    Type: "AWS::S3::Bucket"
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub "fair-dynamo-backup-${Environment}-${EnvironmentType}"
+      VersioningConfiguration:
+        Status: Enabled
+
+  LambdaIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub "dynamo-backup-lambda-${Environment}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: "dynamo-backup-lambda-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Sid: "Stmt1444729748000"
+                Action: 
+                  - "firehose:CreateDeliveryStream"
+                  - "firehose:DescribeDeliveryStream"
+                  - "firehose:ListDeliveryStreams"
+                  - "firehose:PutRecord"
+                  - "firehose:PutRecordBatch"
+                  - "dynamodb:DescribeStream"
+                  - "dynamodb:DescribeTable"
+                  - "dynamodb:GetRecords"
+                  - "dynamodb:GetShardIterator"
+                  - "dynamodb:ListStreams"
+                  - "dynamodb:ListTables"
+                  - "dynamodb:UpdateTable"
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "lambda:CreateFunction"
+                  - "lambda:CreateEventSourceMapping"
+                  - "lambda:ListEventSourceMappings"
+                  - "iam:passrole"
+                  - "s3:Get*"
+                  - "s3:List*"
+                Resource: "*"
+
+  FirehoseIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub "dynamo-backup-firehose-${Environment}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "firehose.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: "dynamo-backup-lambda-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Sid: ""
+                Action: 
+                  - "s3:AbortMultipartUpload"
+                  - "s3:GetBucketLocation"
+                  - "s3:GetObject"
+                  - "s3:ListBucket"
+                  - "s3:ListBucketMultipartUploads"
+                  - "s3:PutObject"
+                Resource: 
+                  - !Sub "arn:aws:s3:::fair-dynamo-backup-${Environment}"
+                  - !Sub "arn:aws:s3:::fair-dynamo-backup-${Environment}/*"
+              - Effect: "Allow"
+                Sid: ""
+                Action: 
+                  - "logs:PutLogEvents"
+                Resource:
+                  - "arn:aws:logs:us-west-2:155537346795:log-group:/aws/kinesisfirehose/*:log-stream:*"
+  
+  CloudWatchIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub "dynamo-backup-cloudwatch-${Environment}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "events.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: "dynamo-backup-cloudwatch-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Sid: ""
+                Action: 
+                  - "kinesis:PutRecord"
+                Resource: "*"
